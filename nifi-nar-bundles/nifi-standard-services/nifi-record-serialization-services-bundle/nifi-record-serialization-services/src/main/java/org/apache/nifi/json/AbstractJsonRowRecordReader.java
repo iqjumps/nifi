@@ -28,6 +28,7 @@ import org.apache.nifi.serialization.record.RecordFieldType;
 import org.apache.nifi.serialization.record.RecordSchema;
 import org.apache.nifi.serialization.record.type.ArrayDataType;
 import org.apache.nifi.serialization.record.type.ChoiceDataType;
+import org.apache.nifi.serialization.record.type.MapDataType;
 import org.apache.nifi.serialization.record.type.RecordDataType;
 import org.apache.nifi.serialization.record.util.DataTypeUtils;
 import org.codehaus.jackson.JsonFactory;
@@ -155,6 +156,17 @@ public abstract class AbstractJsonRowRecordReader implements RecordReader {
                 final ChoiceDataType choiceDataType = (ChoiceDataType) dataType;
 
                 for (final DataType possibleDataType : choiceDataType.getPossibleSubTypes()) {
+                    if (possibleDataType.getFieldType() == RecordFieldType.MAP) {
+                            DataType valueType = ((MapDataType) possibleDataType).getValueType();
+                            final Map<String, Object> childValues = new HashMap<>();
+                            final Iterator<String> fieldNames = fieldNode.getFieldNames();
+                            while (fieldNames.hasNext()) {
+                                final String childFieldName = fieldNames.next();
+                                final Object childValue = getRawNodeValue(fieldNode.get(childFieldName), valueType);
+                                childValues.put(childFieldName, childValue);
+                            }
+                            return childValues;
+                    }
                     if (possibleDataType.getFieldType() != RecordFieldType.RECORD) {
                         continue;
                     }

@@ -671,4 +671,35 @@ public class TestJsonTreeRowRecordReader {
             assertTrue(msg.contains("Boolean"));
         }
     }
+
+    @Test
+    public void testChoiceOfMapTypes() throws IOException, MalformedRecordException {
+
+        Schema schema = new Schema.Parser().parse(new FileInputStream(new File("src/test/resources/json/map-of-map-choice.avsc")));
+        RecordSchema recordSchema = AvroTypeUtil.createSchema(schema);
+        Assert.assertTrue(recordSchema.getIdentifier().getName().isPresent());
+        Assert.assertEquals("member", recordSchema.getIdentifier().getName().get());
+
+        try (final InputStream in = new FileInputStream(new File("src/test/resources/json/elements-for-map-of-map-choice.json"));
+             final JsonTreeRowRecordReader reader = new JsonTreeRowRecordReader(in, Mockito.mock(ComponentLog.class), recordSchema, dateFormat, timeFormat, timestampFormat)) {
+
+            Object info = reader.nextRecord().getValue("info");
+            assertTrue(info instanceof Map);
+            Map infoMap = (Map) info;
+            assertEquals("1234", infoMap.get("id"));
+            Object name = infoMap.get("name");
+            assertTrue(name instanceof Map);
+            Map nameMap = (Map) name;
+            assertEquals("Minsu", nameMap.get("first"));
+            assertEquals("Kim", nameMap.get("last"));
+
+            info = reader.nextRecord().getValue("info");
+            assertTrue(info instanceof Map);
+            infoMap = (Map) info;
+            assertEquals("1234", infoMap.get("id"));
+            name = infoMap.get("name");
+            assertTrue(name instanceof String);
+            assertEquals("Minsu Kim", name);
+        }
+    }
 }

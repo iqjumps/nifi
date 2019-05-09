@@ -1,0 +1,13 @@
+{
+  "name": "member",
+  "type": "record",
+  "namespace": "nifi",
+  "fields": [
+    { "name": "info", "type": ["null", {
+      "type": "map", "values": [{
+        "type": "map", "values": ["string"]
+        }, "string"]
+      }]
+    }
+  ]
+}

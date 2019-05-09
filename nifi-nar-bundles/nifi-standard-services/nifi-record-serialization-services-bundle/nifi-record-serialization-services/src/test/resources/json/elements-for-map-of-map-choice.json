@@ -1,0 +1,14 @@
+[{
+  "info": {
+    "id": "1234",
+    "name": {
+      "first": "Minsu",
+      "last": "Kim"
+    }
+  }
+}, {
+  "info": {
+    "id": "1234",
+    "name": "Minsu Kim"
+  }
+}]
